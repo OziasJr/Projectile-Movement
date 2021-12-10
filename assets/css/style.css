@@ -1,5 +1,7 @@
 
 body {
+    padding: 0;
+    margin: 0;
     font-family: arial;
     background: linear-gradient(90deg, #020024 0%, #e3e1ff 0%, #adadff 49%, #00d4ff 100%);
 }
@@ -33,17 +35,4 @@ input {
     width: 30px;
     height: 24px;
     background-color: transparent;
-}
-
-#marca {
-    border-radius: 5px;
-    border-radius: 5px;
-    background: rgb(231, 7, 213);
-    margin: 2px;
-    padding-left: 5px;
-}
-
-.licencia {
-    float: right;
-    border-width: 0;
 }

@@ -7,10 +7,201 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
-    <title>Movimento de Projétil - Cinemática</title>
-    <style type="text/css">
-    </style>
+    <title>Movimento de um Projétil - Cinemática</title>
+</head>
+
+<body>
+    <main onload="gradosaleat()" onmousemove="hmax()">
+
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light border border-secondary">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="./index.html">Projeto</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                          <a class="nav-link active" aria-current="page" href="./index.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" aria-current="page" href="./pages/manual.html">Manual</a>
+                        </li>
+                      <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="./pages/conteudo.html">Conteúdo</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Título da simulação -->
+        <h1 class="text-bold text-center mt-3">Movimento de um Projétil - Cinemática</h1>
+
+        <!-- Parte onde contém a animação do disparo -->
+        <div class="container mt-3 d-flex justify-content-center">
+            <canvas id="screen" onclick="borra()">
+                <span style="color: red">Elemento <b>canvas</b> no soportado.</span>
+            </canvas>
+        </div>
+        <div class="container">
+            <form name="forma" class="mt-3">
+                <div id="datos">
+                    <div class="container mb-3">
+
+                        <!-- Parte onde se pede o valor da Gravidade, Velocidade e Ângulo de Disparo -->
+                        <div class="row">
+                            <div class="input-group col p-0">
+                                <span class="input-group-text border border-secondary"
+                                    id="basic-addon1">Gravidade&nbsp;<strong
+                                        class="text-dark">(m/s<sup>2</sup></sup>)</strong></span>
+                                <input type="number" placeholder="Digite um valor..." name="gravedad" size="1"
+                                    class="form-control data bg-white border border-secondary" value=""
+                                    aria-label="Username" aria-describedby="basic-addon1" onfocus="comprobar()"
+                                    onchange="comprobar()">
+                            </div>
+                            <div class="input-group col pe-0 ps-3">
+                                <span class="input-group-text border border-secondary" id="basic-addon1">Velocidade
+                                    Inicial&nbsp;<strong class="text-dark">(m/s)</strong></span>
+                                <input type="number" placeholder="Digite um valor..." name="vo" value="" size="1"
+                                    class="form-control data bg-white border border-secondary" aria-label="Username"
+                                    aria-describedby="basic-addon1" onfocus="comprobar()" onchange="comprobar()">
+                            </div>
+                            <div class="input-group col pe-0 ps-3">
+                                <span class="input-group-text border border-secondary" id="basic-addon1">Ângulo
+                                    de
+                                    Tiro&nbsp;<strong class="text-dark">(graus)</strong></span>
+                                <input type="number" placeholder="Digite um valor..." name="grados" value="" size="1"
+                                    class="form-control data bg-white border border-secondary" aria-label="Username"
+                                    aria-describedby="basic-addon1" onfocus="comprobar()" onchange="comprobar()">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container mb-3">
+
+                        <!-- Parte onde mostra a Velocidade Instantânea em X-Y e o Ângulo Instatâneo -->
+                        <div class="row mb-3">
+                            <div class="col p-0">
+                                <div class="input-group">
+                                    <span class="input-group-text border border-secondary w-100"
+                                        id="basic-addon1">Velocidade Instantânea em X&nbsp;<strong
+                                            class="text-dark">(m/s)</strong>:
+                                        <span class="m-auto">
+                                            <input name="vx" type="number" step="0.1" min="0" max="0" value=""
+                                                class="data fw-bold text-success text-center" disabled="true" size="1">
+                                        </span>
+                                        <span>
+                                </div>
+                            </div>
+                            <div class="col pe-0 ps-3">
+                                <div class="input-group">
+                                    <span class="input-group-text border border-secondary w-100"
+                                        id="basic-addon1">Velocidade Instantânea em Y&nbsp;<strong
+                                            class="text-dark">(m/s)</strong>:
+                                        <span class="m-auto">
+                                            <input name="vy" type="number" step="0.1" min="0" max="0" value=""
+                                                class="data fw-bold text-primary text-center" disabled="true" size="1">
+                                        </span>
+                                        <span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Parte onde mostra as informações da Altura em X, Altura em Y e o Altura Máxima -->
+                        <div class="row">
+                            <div class="col-lg-4 p-0">
+                                <div class="input-group">
+                                    <span class="input-group-text border border-secondary w-100"
+                                        id="basic-addon1">Ângulo
+                                        Instantâneo&nbsp;<strong class="text-dark">(graus)</strong>:
+                                        <span class="text-dark m-auto">
+                                            <input name="ai" type="number" step="0.1" min="0" max="0" value=""
+                                                class="data fw-bold text-danger text-center" disabled="true" size="1">
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 ps-3 pe-0">
+                                <div class="input-group">
+                                    <span class="input-group-text border border-secondary w-100"
+                                        id="basic-addon1">Alcance Máximo&nbsp;<strong class="text-dark">(m)</strong>:
+                                        <span class="m-auto">
+                                            <input name="x" type="number" step="0.1" min="0" max="0" value=""
+                                                class="coor fw-bold text-warning text-center" disabled="true" size="1">
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 ps-3 pe-0">
+                                <div class="input-group">
+                                    <span class="input-group-text border border-secondary w-100"
+                                        id="basic-addon1">Altura
+                                        Máxima&nbsp;<strong class="text-dark">(m)</strong>:
+                                        <span class="m-auto">
+                                            <input name="hmax" type="number" step="0.1" min="0" max="0" value=""
+                                                class="data fw-bold text-secondary text-center" disabled="true"
+                                                size="1">
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container d-flex flex-column">
+                    <div class="row mb-3" id="tiempo">
+                        <div class="col-lg-4 p-0">
+                            <div class="input-group">
+                                <span class="input-group-text border border-secondary w-100" id="basic-addon1">Distância
+                                    em Y&nbsp;<strong class="text-dark">(m)</strong>:
+                                    <span class="m-auto">
+                                        <input name="y" type="number" step="0.1" min="0" max="0" value=""
+                                            class="coor fw-bold text-info text-center" disabled="true" size="1">
+                                    </span>
+                                    <span>
+                            </div>
+                        </div>
+                        <div class="col-lg-8 ps-3 pe-0">
+                            <div class="input-group">
+                                <span class="input-group-text text-center border border-secondary w-100"
+                                    id="basic-addon1">Tempo Percorrido pelo Pojétil&nbsp;<strong class="text-dark">(h :
+                                        min : s : ms)</strong>:
+                                    <span class="m-auto">
+                                        <input class="data fw-bold text-dark text-center bg-transparent" name="h"
+                                            type="number" step="0.1" min="0" max="0" value="00" size="1" class="crono"
+                                            readonly>
+                                        :<input class="data fw-bold text-dark text-center bg-transparent" name="m"
+                                            type="number" step="0.1" min="0" max="0" value="00" size="1" class="crono"
+                                            readonly>
+                                        :<input class="data fw-bold text-dark text-center bg-transparent" name="s"
+                                            type="number" step="0.1" min="0" max="0" value="00" size="1" class="crono"
+                                            readonly>
+                                        :<input class="data fw-bold text-dark text-center bg-transparent" name="cs"
+                                            type="number" step="0.1" min="0" max="0" value="00" size="1" class="crono"
+                                            readonly>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="d-grid gap-2 p-0">
+                            <input type="button" class="btn btn-success mb-2" value="Começar Simulação"
+                                onclick="start()" class="boton">
+                            <input type="button" class="btn btn-primary mb-2" value="Parar Simulação" onclick="stop()"
+                                class="boton">
+                            <input type="button" class="btn btn-warning mb-3" value="Resetar Simulação"
+                                onclick="reset()" class="boton">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
     <script type="text/javascript">
 
         // Definição das variáveis
@@ -19,15 +210,8 @@
         var gra; // Ângulo de Tiro
         var t; // Variável Tempo h*3600 + m+60 + s + (.01*cs)
         var g; // Gravidade
-
-        var coefficient = 0.47; // Coeficiente de atrito de uma esfera
-        var diameter; // Diâmetro da esfera
-        var p = 1.22; // Densidade do ar
-
-        var M; // Massa do objeto
         var h; // Variável para a Altura Máxima
         var ai; // Variável para o ângulo que descreve a trajetória em qualquer instante
-        var fa = Math.exp((.5) * coefficient * p * diameter * (Vo)^2); // Força de arrasto
 
         // Componentes do vetor de velocidade em cada instante
         var vx;
@@ -89,14 +273,12 @@
             ctx.clearRect(0, 0, 500, 500);
 
         }
-        //--------------------------------------------------------------------------------------------------------
+
         function calculacoordenadas(t) {
-            
+
             // Conversão Graus para Radianos
             gra = ((parseFloat(document.forma.grados.value) * Math.PI) / 180); // Obtém o valor do ângulo digitado pelo usuário
             g = parseFloat(document.forma.gravedad.value); // Obtém o valor da gravidade digitado pelo usuário
-
-            dragCoefficient = parseFloat(document.forma.value) // Obtém o valor da resistência do ar digitada pelo usuário
 
             Vo = parseFloat(document.forma.vo.value); // Obtém o valor da velocidade inicial digitado pelo usuário
 
@@ -106,8 +288,8 @@
             yp = 1490 - y;
 
             // Componentes do vetor de velocidade em cada instante
-            vx = ((Math.cos(gra) * Vo) * (Math.exp(-t * fa)));
-            vy = (((Math.sin(gra)) * (Vo) + (g/fa)) * (Math.exp(-t * fa)) - (g/fa));
+            vx = (Math.cos(gra) * Vo);
+            vy = (((Math.sin(gra)) * (Vo)) - (g * t))
 
             // Ângulo a cada momento
             ai = Math.atan(vy / vx) * (180 / Math.PI);
@@ -132,17 +314,17 @@
 
         }
 
-        function hmax() { // calculo de la altura maxima
+        function hmax() { // Cálculo da Altura Máxima
             gra = ((parseFloat(document.forma.grados.value) * Math.PI) / 180);
-            g = parseFloat(document.forma.gravedad.value); // lee la gravedad
+            g = parseFloat(document.forma.gravedad.value);
             Vo = parseFloat(document.forma.vo.value);
             h = (((Vo * Math.sin(gra)) * (Vo * Math.sin(gra))) / (2 * g));
             //otra forma: alert ( ((Vo*Math.sin(gra)*((Math.sin(gra)*Vo)/g)-(.5*g*Math.pow(((Math.sin(gra)*Vo)/g),2)))) )
             document.forma.hmax.value = redondeo(h);
         }
-        //------------------------------------------------------------------------------------------------------------------
-        function calc() { // calcula los valores en un tiempo determinado
-            //lee variables 
+
+        // Cálculo de valores de um tempo determinado
+        function calc() {
             cs = parseFloat(document.forma.cs.value);
             s = parseFloat(document.forma.s.value);
             m = parseFloat(document.forma.m.value);
@@ -151,15 +333,15 @@
             calculacoordenadas(t);
         }
 
-        // para el cronometro
+        // Para o cronômetro
         function stop() {
-            go = false; //stop
-            //lee variables 
+            go = false;
             cs = parseFloat(document.forma.cs.value);
             s = parseFloat(document.forma.s.value);
             m = parseFloat(document.forma.m.value);
             h = parseFloat(document.forma.h.value);
-            // mientras que solo tengan una cifra a�ade un cero delante
+
+            // Contanto que eles tenham apenas um dígito, adicione um zero à esquerda
             if (h < 10) { h = '0' + h; }
             if (m < 10) { m = '0' + m; }
             if (s < 10) { s = '0' + s; }
@@ -282,178 +464,6 @@
         }
 
     </script>
-</head>
-
-<body onload="gradosaleat()" onmousemove="hmax()">
-
-    <!-- Título da simulação -->
-    <h1 class="text-bold text-center mt-3">Movimento de Projétil - Cinemática</h1>
-
-    <!-- Parte onde contém a animação do disparo -->
-    <div class="container mt-3 d-flex justify-content-center">
-        <canvas id="screen" onclick="borra()">
-            <span style="color: red">Elemento <b>canvas</b> no soportado.</span>
-        </canvas>
-    </div>
-    <div class="container">
-        <form name="forma" class="mt-3">
-            <div id="datos">
-                <div class="container mb-3">
-
-                    <!-- Parte onde se pede o valor da Gravidade, Velocidade e Ângulo de Disparo -->
-                    <div class="row mb-3">
-                        <div class="input-group col p-0">
-                            <span class="input-group-text border border-secondary"
-                                id="basic-addon1">Gravidade&nbsp;<strong
-                                    class="text-dark">(m/s<sup>2</sup></sup>)</strong></span>
-                            <input type="number" placeholder="Digite um valor..." name="gravedad" size="1"
-                                class="form-control data bg-white border border-secondary" value=""
-                                aria-label="Username" aria-describedby="basic-addon1" onfocus="comprobar()"
-                                onchange="comprobar()">
-                        </div>
-                        <div class="input-group col pe-0 ps-3">
-                            <span class="input-group-text border border-secondary" id="basic-addon1">Velocidade
-                                Inicial&nbsp;<strong class="text-dark">(m/s)</strong></span>
-                            <input type="number" placeholder="Digite um valor..." name="vo" value="" size="1"
-                                class="form-control data bg-white border border-secondary" aria-label="Username"
-                                aria-describedby="basic-addon1" onfocus="comprobar()" onchange="comprobar()">
-                        </div>
-                        <div class="input-group col pe-0 ps-3">
-                            <span class="input-group-text border border-secondary" id="basic-addon1">Ângulo de
-                                Tiro&nbsp;<strong class="text-dark">(graus)</strong></span>
-                            <input type="number" placeholder="Digite um valor..." name="grados" value="" size="1"
-                                class="form-control data bg-white border border-secondary" aria-label="Username"
-                                aria-describedby="basic-addon1" onfocus="comprobar()" onchange="comprobar()">
-                        </div>
-                    </div>
-
-                    <!-- Parte onde se pede a Massa do Obejto -->
-                    <div class="row">
-                        <div class="input-group col p-0">
-                            <span class="input-group-text border border-secondary" id="basic-addon1">Massa do Objeto&nbsp;<strong class="text-dark">(kg)</strong></span>
-                            <input type="number" placeholder="Digite um valor..." name="M" value="" size="1"
-                                class="form-control data bg-white border border-secondary" aria-label="Username"
-                                aria-describedby="basic-addon1" onfocus="comprobar()" onchange="comprobar()">
-                        </div>
-                        <div class="input-group col pe-0 ps-3">
-                            <span class="input-group-text border border-secondary"
-                                id="basic-addon1">Diâmetro do Objeto&nbsp;<strong
-                                    class="text-dark">(m)</strong></span>
-                            <input type="number" placeholder="Digite um valor..." name="diameter" size="1"
-                                class="form-control data bg-white border border-secondary" value=""
-                                aria-label="Username" aria-describedby="basic-addon1" onfocus="comprobar()"
-                                onchange="comprobar()">
-                        </div>
-                        <div class="input-group col pe-0 ps-3">
-                            <span class="input-group-text border border-secondary"
-                                id="basic-addon1">Comprimento do Objeto&nbsp;<strong
-                                    class="text-dark">(m)</strong></span>
-                            <input type="number" placeholder="Digite um valor..." name="length" size="1"
-                                class="form-control data bg-white border border-secondary" value=""
-                                aria-label="Username" aria-describedby="basic-addon1" onfocus="comprobar()"
-                                onchange="comprobar()">
-                        </div>
-                    </div>
-                </div>
-                <div class="container mb-3">
-
-                    <!-- Parte onde mostra a Velocidade Instantânea em X-Y e o Ângulo Instatâneo -->
-                    <div class="row mb-3">
-                        <div class="col-lg-7 p-0">
-                            <div class="input-group">
-                                <span class="input-group-text border border-secondary w-100"
-                                    id="basic-addon1">Velocidade Instantânea em X e Y&nbsp;<strong
-                                        class="text-dark">(m/s)</strong>:
-                                    <span class="m-auto">
-                                        <input name="vx" type="number" step="0.1" min="0" max="0" value=""
-                                        class="data fw-bold text-success text-center" disabled="true" size="1">
-                                    </span>|
-                                    <span class="m-auto">
-                                        <input name="vy" type="number" step="0.1" min="0" max="0" value=""
-                                        class="data fw-bold text-primary text-center" disabled="true" size="1">
-                                    </span>
-                                <span>
-                            </div>
-                        </div>
-                        <div class="col-lg-5 ps-3 pe-0">
-                            <div class="input-group">
-                                <span class="input-group-text border border-secondary w-100" id="basic-addon1">Ângulo
-                                    Instantâneo&nbsp;<strong class="text-dark">(graus)</strong>:
-                                    <span class="text-dark m-auto">
-                                        <input name="ai" type="number" step="0.1" min="0"
-                                        max="0" value="" class="data fw-bold text-danger text-center"
-                                        disabled="true" size="1">
-                                    </span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Parte onde mostra as informações da Altura em X, Altura em Y e o Altura Máxima -->
-                    <div class="row">
-                        <div class="col-lg-6 p-0">
-                            <div class="input-group">
-                                <span class="input-group-text border border-secondary w-100" id="basic-addon1">Alcance Máximo&nbsp;<strong class="text-dark">(m)</strong>:
-                                    <span class="m-auto">
-                                        <input name="x" type="number" step="0.1" min="0" max="0" value=""
-                                        class="coor fw-bold text-warning text-center" disabled="true" size="1">
-                                    </span>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 ps-3 pe-0">
-                            <div class="input-group">
-                                <span class="input-group-text border border-secondary w-100" id="basic-addon1">Altura
-                                    Máxima&nbsp;<strong class="text-dark">(m)</strong>:
-                                    <span class="m-auto">
-                                        <input name="hmax" type="number" step="0.1" min="0" max="0" value=""
-                                        class="data fw-bold text-secondary text-center" disabled="true" size="1">
-                                    </span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="container d-flex flex-column">
-                <div class="row mb-3" id="tiempo">
-                    <div class="col-lg-4 p-0">
-                        <div class="input-group">
-                            <span class="input-group-text border border-secondary w-100"   id="basic-addon1">Distância
-                                em Y&nbsp;<strong class="text-dark">(m)</strong>:
-                                <span class="m-auto">
-                                    <input name="y" type="number" step="0.1" min="0" max="0" value=""
-                                    class="coor fw-bold text-info text-center" disabled="true" size="1">
-                                </span>
-                            <span>
-                        </div>
-                    </div>
-                    <div class="col-lg-8 ps-3 pe-0">
-                        <div class="input-group">
-                            <span class="input-group-text text-center border border-secondary w-100" id="basic-addon1">Tempo Percorrido pelo Pojétil&nbsp;<strong class="text-dark">(h : min : s : ms)</strong>:
-                                <span class="m-auto">
-                                    <input class="data fw-bold text-dark text-center bg-transparent" name="h" type="number" step="0.1" min="0" max="0" value="00" size="1" class="crono">
-                                    :<input class="data fw-bold text-dark text-center bg-transparent" name="m" type="number" step="0.1" min="0" max="0" value="00" size="1" class="crono">
-                                    :<input class="data fw-bold text-dark text-center bg-transparent" name="s" type="number" step="0.1" min="0" max="0" value="00" size="1" class="crono">
-                                    :<input class="data fw-bold text-dark text-center bg-transparent" name="cs" type="number" step="0.1" min="0" max="0" value="00" size="1" class="crono">
-                                </span>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="d-grid gap-2 p-0">
-                        <input type="button" class="btn btn-success mb-2" value="Começar Simulação" onclick="start()"
-                            class="boton">
-                        <input type="button" class="btn btn-primary mb-2" value="Parar Simulação" onclick="stop()"
-                            class="boton">
-                        <input type="button" class="btn btn-warning mb-3" value="Resetar Simulação" onclick="reset()"
-                            class="boton">
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
 </body>
 
 </html>
