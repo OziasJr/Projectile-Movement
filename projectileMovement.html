@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <title>Movimento de Projétil - Cinemática</title>
+    <style type="text/css">
+    </style>
+    <script type="text/javascript">
+
+        // Definição das variáveis
+
+        var Vo; // Velocidade Inícial 
+        var gra; // Ângulo de Tiro
+        var t; // Variável Tempo h*3600 + m+60 + s + (.01*cs)
+        var g; // Gravidade
+
+        var coefficient = 0.47; // Coeficiente de atrito de uma esfera
+        var diameter; // Diâmetro da esfera
+        var p = 1.22; // Densidade do ar
+
+        var M; // Massa do objeto
+        var h; // Variável para a Altura Máxima
+        var ai; // Variável para o ângulo que descreve a trajetória em qualquer instante
+        var fa = Math.exp((.5) * coefficient * p * diameter * (Vo)^2); // Força de arrasto
+
+        // Componentes do vetor de velocidade em cada instante
+        var vx;
+        var vy;
+
+        // Variável go com valor: true = cronômetro ligado, false = cronômetro desligado
+        var go;
+
+        // Variáveis de tempo para o cronômetro
+        var cs; // Sentésimos de segundo
+        var s;  // Segundo
+        var m;  // Minutos
+        var h;  // Horas
+
+        var nmarca = 0; // Número que aparece na frente de cada marca no tempo
+        var mem;
+
+        // Variáveis ​​para eixos
+        var x = 0;
+        var y = 0;
+        var yp = 0; // O y que representará graficamente a altura da tela, será subtraído de forma que a origem fique para baixo
+
+        var color; // Variável para a cor do tiro
+
+        // Começamos o tempo assim que clicar em "Começar"
+        window.onload = setInterval(crono, 10); //
+
+        function redondeo(numero) {
+            var original = parseFloat(numero);
+            var result = Math.round(original * 100) / 100;
+            return result;
+        }
+
+        function aleatorio(inferior, superior) {
+            var numPos = superior - inferior;
+            var aleat = Math.random() * numPos;
+            aleat = Math.floor(aleat);
+            return parseInt(inferior) + aleat;
+        }
+
+        function colorAleatorio() {
+            return "rgb(" + aleatorio(0, 255) + "," + aleatorio(0, 255) + "," + aleatorio(0, 100) + ")";
+        }
+
+        function dibuja() {
+            var canvas = document.getElementById('screen');
+            var ctx = canvas.getContext('2d');
+            ctx.fillStyle = color;
+            // ctx.fillRect (parseInt(x/10), parseInt(yp/10), 2, 2); // Com um retângulo
+            ctx.beginPath();
+            ctx.arc(x / 10, yp / 10, .8, 0, Math.PI * 2, false); // Com um círculo em cada ponto 
+            ctx.fill();
+            if (pmarca == true) { dibujarmarca() }
+        }
+
+        function borra() {
+            var canvas = document.getElementById('screen');
+            var ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, 500, 500);
+
+        }
+        //--------------------------------------------------------------------------------------------------------
+        function calculacoordenadas(t) {
+            
+            // Conversão Graus para Radianos
+            gra = ((parseFloat(document.forma.grados.value) * Math.PI) / 180); // Obtém o valor do ângulo digitado pelo usuário
+            g = parseFloat(document.forma.gravedad.value); // Obtém o valor da gravidade digitado pelo usuário
+
+            dragCoefficient = parseFloat(document.forma.value) // Obtém o valor da resistência do ar digitada pelo usuário
+
+            Vo = parseFloat(document.forma.vo.value); // Obtém o valor da velocidade inicial digitado pelo usuário
+
+            // Cálculo das Coordenadas     
+            x = ((Vo * t * (Math.cos(gra))));
+            y = ((Vo * t * (Math.sin(gra))) - (.5) * g * (t * t));
+            yp = 1490 - y;
+
+            // Componentes do vetor de velocidade em cada instante
+            vx = ((Math.cos(gra) * Vo) * (Math.exp(-t * fa)));
+            vy = (((Math.sin(gra)) * (Vo) + (g/fa)) * (Math.exp(-t * fa)) - (g/fa));
+
+            // Ângulo a cada momento
+            ai = Math.atan(vy / vx) * (180 / Math.PI);
+
+            // Imprime os Dados  
+            document.forma.x.value = redondeo(x);
+            document.forma.y.value = redondeo(y);
+
+            document.forma.ai.value = redondeo(ai);
+            document.forma.vx.value = redondeo(vx);
+            document.forma.vy.value = redondeo(vy);
+
+            // Condição para parar o tiro quando chegar a zero
+            if (t > 0) {
+                if (y <= 0) {
+                    go = false; // Parar
+                }
+            }
+
+            dibuja();
+
+
+        }
+
+        function hmax() { // calculo de la altura maxima
+            gra = ((parseFloat(document.forma.grados.value) * Math.PI) / 180);
+            g = parseFloat(document.forma.gravedad.value); // lee la gravedad
+            Vo = parseFloat(document.forma.vo.value);
+            h = (((Vo * Math.sin(gra)) * (Vo * Math.sin(gra))) / (2 * g));
+            //otra forma: alert ( ((Vo*Math.sin(gra)*((Math.sin(gra)*Vo)/g)-(.5*g*Math.pow(((Math.sin(gra)*Vo)/g),2)))) )
+            document.forma.hmax.value = redondeo(h);
+        }
+        //------------------------------------------------------------------------------------------------------------------
+        function calc() { // calcula los valores en un tiempo determinado
+            //lee variables 
+            cs = parseFloat(document.forma.cs.value);
+            s = parseFloat(document.forma.s.value);
+            m = parseFloat(document.forma.m.value);
+            h = parseFloat(document.forma.h.value);
+            t = (h * 3600 + m * 60 + s + cs * 0.01);
+            calculacoordenadas(t);
+        }
+
+        // para el cronometro
+        function stop() {
+            go = false; //stop
+            //lee variables 
+            cs = parseFloat(document.forma.cs.value);
+            s = parseFloat(document.forma.s.value);
+            m = parseFloat(document.forma.m.value);
+            h = parseFloat(document.forma.h.value);
+            // mientras que solo tengan una cifra a�ade un cero delante
+            if (h < 10) { h = '0' + h; }
+            if (m < 10) { m = '0' + m; }
+            if (s < 10) { s = '0' + s; }
+            if (cs < 10) { cs = '0' + cs; }
+            alert('Parado en ' + '\"' + h + ':' + m + ':' + s + ':' + cs + '\"');
+        }
+
+        // Liga o cronômetro
+        function start() {
+            go = true; // Valor verdadeiro para a variável go
+            color = colorAleatorio(); // Muda a cor do tracejado
+        }
+
+        function crono() {
+
+            // Se for verdedeiro, faça tal coisa
+            if (go == true) {
+
+                // As variáveis
+                cs = parseFloat(document.forma.cs.value);
+                s = parseFloat(document.forma.s.value);
+                m = parseFloat(document.forma.m.value);
+                h = parseFloat(document.forma.h.value);
+
+                // Adicipna um centésimo de segundo
+                cs++;
+                if (cs > 100) {
+                    s = (s + parseInt(cs / 100));
+                    cs = cs % 100;
+                }
+
+                if (cs == 100) { // Segundos
+                    cs = 0;
+                    s++; // Soma um segundo
+                }
+
+                if (s == 60) { // Minutos
+                    s = 0;
+                    m++; // Soma um minuto
+                }
+
+                // Condição para alterar o excesso de segundos para minutos caso você queira inserir o valor em segundos
+                if (s > 60) {
+                    m = m + parseInt(s / 60);
+                    s = s % 60;
+                }
+
+                if (m == 60) { // Hpras
+                    m = 0;
+                    h++; // Soma uma hora
+                }
+
+                if (m > 60) {
+                    h = h + parseInt(m / 60);
+                    m = m % 60;
+                }
+
+                // Obtém o tempo em segundos
+                t = (h * 3600 + m * 60 + s + cs * 0.01);
+
+                // Contanto que eles tenham apenas um dígito, adiciona um zero à esquerda
+                if (h < 10) { h = '0' + h; }
+                if (m < 10) { m = '0' + m; }
+                if (s < 10) { s = '0' + s; }
+                if (cs < 10) { cs = '0' + cs; }
+
+                // Imprime o tempo                        
+                document.forma.cs.value = cs;
+                document.forma.s.value = s;
+                document.forma.m.value = m;
+                document.forma.h.value = h;
+
+                calculacoordenadas(t);
+            }
+        }
+
+        function reset() {
+            document.forma.cs.value = "00";
+            document.forma.s.value = "00";
+            document.forma.m.value = "00";
+            document.forma.h.value = "00";
+            document.forma.x.value = "0";
+            document.forma.y.value = "0";
+        }
+
+
+        // Função para adicionar uma nova marca
+        function marca() {
+
+            // Lê as variáveis
+            cs = parseFloat(document.forma.cs.value);
+            s = parseFloat(document.forma.s.value);
+            m = parseFloat(document.forma.m.value);
+            h = parseFloat(document.forma.h.value);
+
+            // Contanto que eles tenham apenas um dígito, adiciona um zero à esquerda
+            if (h < 10) { h = '0' + h; }
+            if (m < 10) { m = '0' + m; }
+            if (s < 10) { s = '0' + s; }
+            if (cs < 10) { cs = '0' + cs; }
+            nmarca++;
+            if (nmarca < 10) { nmarca = '0' + nmarca; }
+            div = document.createElement("div");
+            div.setAttribute("id", "marca");
+            texto = document.createTextNode(nmarca + '- t: ' + '\"' + h + ':' + m + ':' + s + ':' + cs + '\" x: ' + x + ' y: ' + y + ' V:( ' + vx + ' , ' + vy + ' ) A: ' + ai + '');
+            div.appendChild(texto);
+            document.getElementById("contenedormarcas").appendChild(div);
+        }
+
+        // Função que limpa as marcas acumuladas no container
+        function resetmarcas() {
+            nmarca = 0;
+            document.getElementById("contenedormarcas").innerHTML = '';
+        }
+
+        // Função que verifica os campos
+        function comprobar() {
+            //if (document.forma.)
+            hmax();
+        }
+
+    </script>
+</head>
+
+<body onload="gradosaleat()" onmousemove="hmax()">
+
+    <!-- Título da simulação -->
+    <h1 class="text-bold text-center mt-3">Movimento de Projétil - Cinemática</h1>
+
+    <!-- Parte onde contém a animação do disparo -->
+    <div class="container mt-3 d-flex justify-content-center">
+        <canvas id="screen" onclick="borra()">
+            <span style="color: red">Elemento <b>canvas</b> no soportado.</span>
+        </canvas>
+    </div>
+    <div class="container">
+        <form name="forma" class="mt-3">
+            <div id="datos">
+                <div class="container mb-3">
+
+                    <!-- Parte onde se pede o valor da Gravidade, Velocidade e Ângulo de Disparo -->
+                    <div class="row mb-3">
+                        <div class="input-group col p-0">
+                            <span class="input-group-text border border-secondary"
+                                id="basic-addon1">Gravidade&nbsp;<strong
+                                    class="text-dark">(m/s<sup>2</sup></sup>)</strong></span>
+                            <input type="number" placeholder="Digite um valor..." name="gravedad" size="1"
+                                class="form-control data bg-white border border-secondary" value=""
+                                aria-label="Username" aria-describedby="basic-addon1" onfocus="comprobar()"
+                                onchange="comprobar()">
+                        </div>
+                        <div class="input-group col pe-0 ps-3">
+                            <span class="input-group-text border border-secondary" id="basic-addon1">Velocidade
+                                Inicial&nbsp;<strong class="text-dark">(m/s)</strong></span>
+                            <input type="number" placeholder="Digite um valor..." name="vo" value="" size="1"
+                                class="form-control data bg-white border border-secondary" aria-label="Username"
+                                aria-describedby="basic-addon1" onfocus="comprobar()" onchange="comprobar()">
+                        </div>
+                        <div class="input-group col pe-0 ps-3">
+                            <span class="input-group-text border border-secondary" id="basic-addon1">Ângulo de
+                                Tiro&nbsp;<strong class="text-dark">(graus)</strong></span>
+                            <input type="number" placeholder="Digite um valor..." name="grados" value="" size="1"
+                                class="form-control data bg-white border border-secondary" aria-label="Username"
+                                aria-describedby="basic-addon1" onfocus="comprobar()" onchange="comprobar()">
+                        </div>
+                    </div>
+
+                    <!-- Parte onde se pede a Massa do Obejto -->
+                    <div class="row">
+                        <div class="input-group col p-0">
+                            <span class="input-group-text border border-secondary" id="basic-addon1">Massa do Objeto&nbsp;<strong class="text-dark">(kg)</strong></span>
+                            <input type="number" placeholder="Digite um valor..." name="M" value="" size="1"
+                                class="form-control data bg-white border border-secondary" aria-label="Username"
+                                aria-describedby="basic-addon1" onfocus="comprobar()" onchange="comprobar()">
+                        </div>
+                        <div class="input-group col pe-0 ps-3">
+                            <span class="input-group-text border border-secondary"
+                                id="basic-addon1">Diâmetro do Objeto&nbsp;<strong
+                                    class="text-dark">(m)</strong></span>
+                            <input type="number" placeholder="Digite um valor..." name="diameter" size="1"
+                                class="form-control data bg-white border border-secondary" value=""
+                                aria-label="Username" aria-describedby="basic-addon1" onfocus="comprobar()"
+                                onchange="comprobar()">
+                        </div>
+                        <div class="input-group col pe-0 ps-3">
+                            <span class="input-group-text border border-secondary"
+                                id="basic-addon1">Comprimento do Objeto&nbsp;<strong
+                                    class="text-dark">(m)</strong></span>
+                            <input type="number" placeholder="Digite um valor..." name="length" size="1"
+                                class="form-control data bg-white border border-secondary" value=""
+                                aria-label="Username" aria-describedby="basic-addon1" onfocus="comprobar()"
+                                onchange="comprobar()">
+                        </div>
+                    </div>
+                </div>
+                <div class="container mb-3">
+
+                    <!-- Parte onde mostra a Velocidade Instantânea em X-Y e o Ângulo Instatâneo -->
+                    <div class="row mb-3">
+                        <div class="col-lg-7 p-0">
+                            <div class="input-group">
+                                <span class="input-group-text border border-secondary w-100"
+                                    id="basic-addon1">Velocidade Instantânea em X e Y&nbsp;<strong
+                                        class="text-dark">(m/s)</strong>:
+                                    <span class="m-auto">
+                                        <input name="vx" type="number" step="0.1" min="0" max="0" value=""
+                                        class="data fw-bold text-success text-center" disabled="true" size="1">
+                                    </span>|
+                                    <span class="m-auto">
+                                        <input name="vy" type="number" step="0.1" min="0" max="0" value=""
+                                        class="data fw-bold text-primary text-center" disabled="true" size="1">
+                                    </span>
+                                <span>
+                            </div>
+                        </div>
+                        <div class="col-lg-5 ps-3 pe-0">
+                            <div class="input-group">
+                                <span class="input-group-text border border-secondary w-100" id="basic-addon1">Ângulo
+                                    Instantâneo&nbsp;<strong class="text-dark">(graus)</strong>:
+                                    <span class="text-dark m-auto">
+                                        <input name="ai" type="number" step="0.1" min="0"
+                                        max="0" value="" class="data fw-bold text-danger text-center"
+                                        disabled="true" size="1">
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Parte onde mostra as informações da Altura em X, Altura em Y e o Altura Máxima -->
+                    <div class="row">
+                        <div class="col-lg-6 p-0">
+                            <div class="input-group">
+                                <span class="input-group-text border border-secondary w-100" id="basic-addon1">Alcance Máximo&nbsp;<strong class="text-dark">(m)</strong>:
+                                    <span class="m-auto">
+                                        <input name="x" type="number" step="0.1" min="0" max="0" value=""
+                                        class="coor fw-bold text-warning text-center" disabled="true" size="1">
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 ps-3 pe-0">
+                            <div class="input-group">
+                                <span class="input-group-text border border-secondary w-100" id="basic-addon1">Altura
+                                    Máxima&nbsp;<strong class="text-dark">(m)</strong>:
+                                    <span class="m-auto">
+                                        <input name="hmax" type="number" step="0.1" min="0" max="0" value=""
+                                        class="data fw-bold text-secondary text-center" disabled="true" size="1">
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container d-flex flex-column">
+                <div class="row mb-3" id="tiempo">
+                    <div class="col-lg-4 p-0">
+                        <div class="input-group">
+                            <span class="input-group-text border border-secondary w-100"   id="basic-addon1">Distância
+                                em Y&nbsp;<strong class="text-dark">(m)</strong>:
+                                <span class="m-auto">
+                                    <input name="y" type="number" step="0.1" min="0" max="0" value=""
+                                    class="coor fw-bold text-info text-center" disabled="true" size="1">
+                                </span>
+                            <span>
+                        </div>
+                    </div>
+                    <div class="col-lg-8 ps-3 pe-0">
+                        <div class="input-group">
+                            <span class="input-group-text text-center border border-secondary w-100" id="basic-addon1">Tempo Percorrido pelo Pojétil&nbsp;<strong class="text-dark">(h : min : s : ms)</strong>:
+                                <span class="m-auto">
+                                    <input class="data fw-bold text-dark text-center bg-transparent" name="h" type="number" step="0.1" min="0" max="0" value="00" size="1" class="crono">
+                                    :<input class="data fw-bold text-dark text-center bg-transparent" name="m" type="number" step="0.1" min="0" max="0" value="00" size="1" class="crono">
+                                    :<input class="data fw-bold text-dark text-center bg-transparent" name="s" type="number" step="0.1" min="0" max="0" value="00" size="1" class="crono">
+                                    :<input class="data fw-bold text-dark text-center bg-transparent" name="cs" type="number" step="0.1" min="0" max="0" value="00" size="1" class="crono">
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="d-grid gap-2 p-0">
+                        <input type="button" class="btn btn-success mb-2" value="Começar Simulação" onclick="start()"
+                            class="boton">
+                        <input type="button" class="btn btn-primary mb-2" value="Parar Simulação" onclick="stop()"
+                            class="boton">
+                        <input type="button" class="btn btn-warning mb-3" value="Resetar Simulação" onclick="reset()"
+                            class="boton">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
